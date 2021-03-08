@@ -2,7 +2,10 @@
 
 import os
 import sys
-from logging import basicConfig, getLogger, DEBUG, FileHandler, Formatter
+from logging import basicConfig, get
+
+
+, DEBUG, FileHandler, Formatter
 from time import sleep
 import paho.mqtt.client as mqtt
 from datetime import datetime
@@ -22,22 +25,10 @@ class AirConditionMonitor:
     CO2_STATUS_ERROR        = 'ERROR'
 
 
-    LOG_FILE = '{script_dir}/logs/air_condition_monitor.log'.format(
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-    )
-
     def __init__(self):
         self._ccs811 = CCS811()
         self.co2_status = self.CO2_STATUS_LOW
-        self.init_logger()
 
-    def init_logger(self):
-        self._logger = getLogger(__class__.__name__)
-        file_handler = FileHandler(self.LOG_FILE)
-        formatter = Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        file_handler.setFormatter(formatter)
-        self._logger.addHandler(file_handler)
-        self._logger.setLevel(DEBUG)
 
     def status(self, co2):
         if co2 < self.CO2_LOWER_LIMIT or co2 > self.CO2_HIGHER_LIMIT:
@@ -64,7 +55,6 @@ class AirConditionMonitor:
                     co2_status = self.status(co2)
                     if co2_status == self.CO2_STATUS_CONDITIONING:
                         print("Under Conditioning...")
-                        self._logger.debug("Under Conditioning...")
                         sleep(2)
                         continue
 
@@ -78,16 +68,11 @@ class AirConditionMonitor:
                     
                     mqtt_client.publish("{}/{}".format("/demo",'bus_count'), mystr)
                         
-                        
-                    if co2_status != self.co2_status:
-                        self.co2_status = co2_status
-                        self._logger.info("CO2: {0}ppm, TVOC: {1}".format(co2, self._ccs811.getTVOC()))
                 else:
-                    self._logger.error('ERROR!')
                     while True:
                         pass
             except:
-                self._logger.error(sys.exc_info())
+                pass
 
             sleep(2)
 
