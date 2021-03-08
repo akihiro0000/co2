@@ -56,8 +56,8 @@ class AirConditionMonitor:
                         continue
 
                     tim = '"timestamp":"'+datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
-                    co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2)) + '"'
-                    tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC())) + '"'
+                    co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
+                    tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC()) + '"'
                     print("CO2: {0}ppm, TVOC: {1}".format(co2, self._ccs811.getTVOC()))
                     
                     mylist = [tim,co2,tvoc]
