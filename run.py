@@ -2,10 +2,7 @@
 
 import os
 import sys
-from logging import basicConfig, get
-
-
-, DEBUG, FileHandler, Formatter
+from logging import basicConfig, get,DEBUG, FileHandler, Formatter
 from time import sleep
 import paho.mqtt.client as mqtt
 from datetime import datetime
