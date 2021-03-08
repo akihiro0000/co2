@@ -24,10 +24,8 @@ CCS811_BOOTLOADER_APP_START = 0xF4
 CCS811_HW_ID_CODE = 0x81
 
 class CCS811:
-    LOG_FILE = '{script_dir}/logs/ccs811.log'.format(script_dir = os.path.dirname(os.path.abspath(__file__)))
 
     def __init__(self, mode = CCS811_DRIVE_MODE_1SEC, address = CCS811_ADDRESS):
-        self.init_logger()
 
         if mode not in [CCS811_DRIVE_MODE_IDLE, CCS811_DRIVE_MODE_1SEC, CCS811_DRIVE_MODE_10SEC, CCS811_DRIVE_MODE_60SEC, CCS811_DRIVE_MODE_250MS]:
             raise ValueError('Unexpected mode value {0}.  Set mode to one of CCS811_DRIVE_MODE_IDLE, CCS811_DRIVE_MODE_1SEC, CCS811_DRIVE_MODE_10SEC, CCS811_DRIVE_MODE_60SEC or CCS811_DRIVE_MODE_250MS'.format(mode))
@@ -60,13 +58,6 @@ class CCS811:
 
         self.setDriveMode(mode)
 
-    def init_logger(self):
-        self._logger = getLogger(__class__.__name__)
-        file_handler = FileHandler(self.LOG_FILE)
-        formatter = Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        file_handler.setFormatter(formatter)
-        self._logger.addHandler(file_handler)
-        self._logger.setLevel(DEBUG)
 
     def disableInterrupt(self):
         self._meas_mode.INT_DATARDY = 1
@@ -107,22 +98,18 @@ class CCS811:
 
     def readU8(self, register):
         result = self._bus.read_byte_data(self._address, register) & 0xFF
-        self._logger.debug("Read 0x%02X from register 0x%02X", result, register)
         return result
 
     def write8(self, register, value):
         value = value & 0xFF
         self._bus.write_byte_data(self._address, register, value)
-        self._logger.debug("Wrote 0x%02X to register 0x%02X", value, register)
 
     def readList(self, register, length):
         results = self._bus.read_i2c_block_data(self._address, register, length)
-        self._logger.debug("Read the following from register 0x%02X: %s", register, results)
         return results
 
     def writeList(self, register, data):
         self._bus.write_i2c_block_data(self._address, register, data)
-        self._logger.debug("Wrote to register 0x%02X: %s", register, data)
 
 class Bitfield:
     def __init__(self, _structure):
