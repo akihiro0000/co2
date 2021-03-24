@@ -61,13 +61,13 @@ class AirConditionMonitor:
                     mylist = [tim,co2,tvoc]
                     mystr = '{' + ','.join(map(str,mylist))+'}'
 
-                    mqtt_client.publish("{}/{}".format("/demo",'bus_count'), mystr)
+                    #mqtt_client.publish("{}/{}".format("/demo",'bus_count'), mystr)
                     t0 = time.time()
 
 
 if __name__ == '__main__':
-    mqtt_client = mqtt.Client()
-    mqtt_client.connect("fluent-bit",1883, 60)
+    #mqtt_client = mqtt.Client()
+    #mqtt_client.connect("fluent-bit",1883, 60)
     air_condition_monitor = AirConditionMonitor()
     air_condition_monitor.execute()
-    mqtt_client.disconnect()
+    #mqtt_client.disconnect()
