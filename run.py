@@ -6,6 +6,7 @@ from time import sleep
 import paho.mqtt.client as mqtt
 from datetime import datetime
 from ccs811 import CCS811
+import time
 
 class AirConditionMonitor:
     CO2_PPM_THRESHOLD_1 = 1000
