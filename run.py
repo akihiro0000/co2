@@ -3,10 +3,10 @@
 import os
 import sys
 from time import sleep
+import time
 import paho.mqtt.client as mqtt
 from datetime import datetime
 from ccs811 import CCS811
-import time
 
 class AirConditionMonitor:
     CO2_PPM_THRESHOLD_1 = 1000
@@ -26,7 +26,6 @@ class AirConditionMonitor:
         self._ccs811 = CCS811()
         self.co2_status = self.CO2_STATUS_LOW
 
-
     def status(self, co2):
         if co2 < self.CO2_LOWER_LIMIT or co2 > self.CO2_HIGHER_LIMIT:
             return self.CO2_STATUS_CONDITIONING
@@ -38,32 +37,46 @@ class AirConditionMonitor:
             return self.CO2_STATUS_TOO_HIGH
 
     def execute(self):
+        while not self._ccs811.available():
+            pass
+        
         t0 = time.time()
         while True:
             if not self._ccs811.available():
                 sleep(1)
                 continue
 
-            if (time.time() - t0)>60 :
-                if not self._ccs811.readData():
-                    co2 = self._ccs811.geteCO2()
-                    co2_status = self.status(co2)
-                    if co2_status == self.CO2_STATUS_CONDITIONING:
-                        print("Under Conditioning...")
-                        sleep(2)
-                        continue
+            try:
+                if (time.time() - t0)>60 :
+                    if not self._ccs811.readData():
+                        co2 = self._ccs811.geteCO2()
+                        co2_status = self.status(co2)
+                        if co2_status == self.CO2_STATUS_CONDITIONING:
+                            print("Under Conditioning...")
+                            sleep(2)
+                            continue
 
-                    tim = '"timestamp":"'+datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
-                    co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
-                    tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC()) + '"'
-                    print("CO2: {0}ppm, TVOC: {1}".format(co2, self._ccs811.getTVOC()))
+                        print("CO2: {0}ppm, TVOC: {1}".format(co2, self._ccs811.getTVOC()))
+                        tim = '"timestamp":"'+datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
+                        co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
+                        tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC()) + '"'
+                        print("CO2: {0}ppm, TVOC: {1}".format(co2, self._ccs811.getTVOC()))
 
-                    mylist = [tim,co2,tvoc]
-                    mystr = '{' + ','.join(map(str,mylist))+'}'
+                        mylist = [tim,co2,tvoc]
+                        mystr = '{' + ','.join(map(str,mylist))+'}'
 
-                    #mqtt_client.publish("{}/{}".format("/demo",'bus_count'), mystr)
-                    t0 = time.time()
+                        #mqtt_client.publish("{}/{}".format("/demo",'bus_count'), mystr)
+                        t0 = time.time()
 
+                        if co2_status != self.co2_status:
+                            self.co2_status = co2_status
+                    else:
+                        while True:
+                            pass
+            except:
+                pass
+
+            sleep(2)
 
 if __name__ == '__main__':
     #mqtt_client = mqtt.Client()
@@ -71,3 +84,4 @@ if __name__ == '__main__':
     air_condition_monitor = AirConditionMonitor()
     air_condition_monitor.execute()
     #mqtt_client.disconnect()
+
