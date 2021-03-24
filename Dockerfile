@@ -7,3 +7,7 @@ RUN pip3 install RPi.GPIO paho-mqtt datetime smbus2
 
 
 WORKDIR /root
+
+RUN git clone --depth 1 https://github.com/akihiro0000/co2.git
+
+WORKDIR /root/co2
