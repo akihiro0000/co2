@@ -7,6 +7,7 @@ import time
 import paho.mqtt.client as mqtt
 from datetime import datetime
 from ccs811 import CCS811
+import pytz
 
 class AirConditionMonitor:
     CO2_PPM_THRESHOLD_1 = 1000
@@ -56,7 +57,7 @@ class AirConditionMonitor:
                             sleep(2)
                             continue
                             
-                        tim = '"timestamp":"'+datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
+                        tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
                         co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
                         tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC()) + '"'
 
