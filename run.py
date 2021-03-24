@@ -60,12 +60,12 @@ class AirConditionMonitor:
                         tim = '"timestamp":"'+datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
                         co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
                         tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC()) + '"'
-                        print("CO2: {0}ppm, TVOC: {1}".format(co2, self._ccs811.getTVOC()))
 
                         mylist = [tim,co2,tvoc]
                         mystr = '{' + ','.join(map(str,mylist))+'}'
+                        print(mystr)
 
-                        #mqtt_client.publish("{}/{}".format("/demo",'bus_count'), mystr)
+                        mqtt_client.publish("{}/{}".format("/demo",'bus_count'), mystr)
                         t0 = time.time()
 
                         if co2_status != self.co2_status:
@@ -79,9 +79,9 @@ class AirConditionMonitor:
             sleep(2)
 
 if __name__ == '__main__':
-    #mqtt_client = mqtt.Client()
-    #mqtt_client.connect("fluent-bit",1883, 60)
+    mqtt_client = mqtt.Client()
+    mqtt_client.connect("fluent-bit",1883, 60)
     air_condition_monitor = AirConditionMonitor()
     air_condition_monitor.execute()
-    #mqtt_client.disconnect()
+    mqtt_client.disconnect()
 
