@@ -38,43 +38,32 @@ class AirConditionMonitor:
             return self.CO2_STATUS_TOO_HIGH
 
     def execute(self):
-        while not self._ccs811.available():
-            pass
-     
         t0 = time.time()
         while True:
             if not self._ccs811.available():
                 sleep(1)
                 continue
 
-            try:
-                if (time.time() - t0)>60 :
-                    if not self._ccs811.readData():
-                        co2 = self._ccs811.geteCO2()
-                        co2_status = self.status(co2)
-                        if co2_status == self.CO2_STATUS_CONDITIONING:
-                            print("Under Conditioning...")
-                            sleep(2)
-                            continue
+            if (time.time() - t0)>60 :
+                if not self._ccs811.readData():
+                    co2 = self._ccs811.geteCO2()
+                    co2_status = self.status(co2)
+                    if co2_status == self.CO2_STATUS_CONDITIONING:
+                        print("Under Conditioning...")
+                        sleep(2)
+                        continue
 
-                        tim = '"timestamp":"'+datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
-                        co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
-                        tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC()) + '"'
-                        print("CO2: {0}ppm, TVOC: {1}".format(co2, self._ccs811.getTVOC()))
+                    tim = '"timestamp":"'+datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
+                    co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
+                    tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC()) + '"'
+                    print("CO2: {0}ppm, TVOC: {1}".format(co2, self._ccs811.getTVOC()))
 
-                        mylist = [tim,co2,tvoc]
-                        mystr = '{' + ','.join(map(str,mylist))+'}'
+                    mylist = [tim,co2,tvoc]
+                    mystr = '{' + ','.join(map(str,mylist))+'}'
 
-                        mqtt_client.publish("{}/{}".format("/demo",'bus_count'), mystr)
-                        t0 = time.time()
+                    mqtt_client.publish("{}/{}".format("/demo",'bus_count'), mystr)
+                    t0 = time.time()
 
-                    else:
-                        while True:
-                            pass
-            except:
-                pass
-
-            sleep(2)
 
 if __name__ == '__main__':
     mqtt_client = mqtt.Client()
