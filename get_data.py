@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+#coding: utf-8
 import os
 import sys
 from time import sleep
@@ -8,24 +8,10 @@ import paho.mqtt.client as mqtt
 from datetime import datetime
 from ccs811 import CCS811
 import pytz
-
-#coding: utf-8
-
 from smbus2 import SMBus
-import time
-import paho.mqtt.client as mqtt
-from datetime import datetime
-import pytz
 
 bus_number  = 1
 i2c_address = 0x76
-
-
-
-mqtt_client = mqtt.Client()
-mqtt_client.connect("fluent-bit",1883, 60)
-
-
 
 bus = SMBus(bus_number)
 
@@ -219,9 +205,9 @@ class AirConditionMonitor:
                             
                         tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
                         co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
-                        tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC()) + '"'
+                        #tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC()) + '"'
 
-                        mylist = [tim,co2,tvoc,temp,pre,hum]
+                        mylist = [tim,co2,temp,pre,hum]
                         mystr = '{' + ','.join(map(str,mylist))+'}'
                         print(mystr)
 
