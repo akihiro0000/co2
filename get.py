@@ -67,16 +67,16 @@ def get_calib_param():
 			digH[i] = (-digH[i] ^ 0xFFFF) + 1  
 
 def readData():
-  try : 
-    data = []
-    for i in range (0xF7, 0xF7+8):
-      data.append(bus.read_byte_data(i2c_address,i))
-    bme_device_address = "0x76"
-  except:
-    data = []
-    for i in range (0xF7, 0xF7+8):
-      data.append(bus.read_byte_data(i2c_address_pre,i))
-    bme_device_address = "0x77"
+	try : 
+		data = []
+		for i in range (0xF7, 0xF7+8):
+		data.append(bus.read_byte_data(i2c_address,i))
+		bme_device_address = "0x76"
+	except:
+		data = []
+		for i in range (0xF7, 0xF7+8):
+		data.append(bus.read_byte_data(i2c_address_pre,i))
+		bme_device_address = "0x77"
       
 	pres_raw = (data[0] << 12) | (data[1] << 4) | (data[2] >> 4)
 	temp_raw = (data[3] << 12) | (data[4] << 4) | (data[5] >> 4)
