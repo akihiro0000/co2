@@ -88,7 +88,7 @@ def readData():
 	
 	tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
 	bme_device = '"' + "bme_device" + '"' + ":" + '"' + str(bme_device_address) + '"'
-  	temp = '"' + "temp(degree)" + '"' + ":" + '"' + str(temp) + '"'
+	temp = '"' + "temp(degree)" + '"' + ":" + '"' + str(temp) + '"'
 	pre = '"' + "pressure(hPa)" + '"' + ":" + '"' + str(pre) + '"'
 	hum = '"' + "humid(%)" + '"' + ":" + '"' + str(hum) + '"'
     
