@@ -34,6 +34,7 @@ class CCS811:
         self._address = address
         self._address_pre = address_pre
         self._bus = smbus.SMBus(1)
+        self._decide_address = ""
 
         self._status = Bitfield([('ERROR' , 1), ('unused', 2), ('DATA_READY' , 1), ('APP_VALID', 1), ('unused2' , 2), ('FW_MODE' , 1)])
 
@@ -92,7 +93,7 @@ class CCS811:
         return self._TVOC
 
     def geteCO2(self):
-        return self._eCO2
+        return self._eCO2,self._decide_address
 
     def checkError(self):
         self._status.set(self.readU8(CCS811_STATUS))
@@ -101,8 +102,10 @@ class CCS811:
     def readU8(self, register):
         try:
             result = self._bus.read_byte_data(self._address, register) & 0xFF
+            self._decide_address = self._address
         except:
             result = self._bus.read_byte_data(self._address_pre, register) & 0xFF
+            self._decide_address = self._address_pre
         return result
 
     def write8(self, register, value):
