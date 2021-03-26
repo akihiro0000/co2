@@ -30,13 +30,23 @@ def writeReg(reg_address, data):
 		bus.write_byte_data(i2c_address_pre,reg_address,data)
 		
 def get_calib_param():
-	calib = []
-	
-	for i in range (0x88,0x88+24):
-		calib.append(bus.read_byte_data(i2c_address,i))
-	calib.append(bus.read_byte_data(i2c_address,0xA1))
-	for i in range (0xE1,0xE1+7):
-		calib.append(bus.read_byte_data(i2c_address,i))
+	try:
+		calib = []
+
+		for i in range (0x88,0x88+24):
+			calib.append(bus.read_byte_data(i2c_address,i))
+		calib.append(bus.read_byte_data(i2c_address,0xA1))
+		for i in range (0xE1,0xE1+7):
+			calib.append(bus.read_byte_data(i2c_address,i))
+			
+	except:
+		calib = []
+
+		for i in range (0x88,0x88+24):
+			calib.append(bus.read_byte_data(i2c_address_pre,i))
+		calib.append(bus.read_byte_data(i2c_address_pre,0xA1))
+		for i in range (0xE1,0xE1+7):
+			calib.append(bus.read_byte_data(i2c_address_pre,i))
 
 	digT.append((calib[1] << 8) | calib[0])
 	digT.append((calib[3] << 8) | calib[2])
