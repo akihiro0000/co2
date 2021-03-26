@@ -214,11 +214,9 @@ class AirConditionMonitor:
                 continue
 
             try:
-                if (time.time() - t0)>10 :
+                if (time.time() - t0)>60 :
                     if not self._ccs811.readData():
-			print(self._ccs811.geteCO2())
                         co2,co2_address = self._ccs811.geteCO2()
-			print(self._ccs811.geteCO2())
                         co2_status = self.status(co2)
                         if co2_status == self.CO2_STATUS_CONDITIONING:
                             print("Under Conditioning...")
