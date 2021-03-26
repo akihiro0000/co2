@@ -7,6 +7,7 @@ from logging import basicConfig, getLogger, DEBUG, FileHandler, Formatter
 from time import sleep
 
 CCS811_ADDRESS  =  0x5B
+CCS811_ADDRESS_PRE  =  0x5A
 
 CCS811_STATUS = 0x00
 CCS811_MEAS_MODE = 0x01
@@ -25,12 +26,13 @@ CCS811_HW_ID_CODE = 0x81
 
 class CCS811:
 
-    def __init__(self, mode = CCS811_DRIVE_MODE_1SEC, address = CCS811_ADDRESS):
+    def __init__(self, mode = CCS811_DRIVE_MODE_1SEC, address = CCS811_ADDRESS,address_pre = CCS811_ADDRESS_PRE):
 
         if mode not in [CCS811_DRIVE_MODE_IDLE, CCS811_DRIVE_MODE_1SEC, CCS811_DRIVE_MODE_10SEC, CCS811_DRIVE_MODE_60SEC, CCS811_DRIVE_MODE_250MS]:
             raise ValueError('Unexpected mode value {0}.  Set mode to one of CCS811_DRIVE_MODE_IDLE, CCS811_DRIVE_MODE_1SEC, CCS811_DRIVE_MODE_10SEC, CCS811_DRIVE_MODE_60SEC or CCS811_DRIVE_MODE_250MS'.format(mode))
 
         self._address = address
+        self._address_pre = address_pre
         self._bus = smbus.SMBus(1)
 
         self._status = Bitfield([('ERROR' , 1), ('unused', 2), ('DATA_READY' , 1), ('APP_VALID', 1), ('unused2' , 2), ('FW_MODE' , 1)])
@@ -97,20 +99,33 @@ class CCS811:
         return self._status.ERROR
 
     def readU8(self, register):
-        result = self._bus.read_byte_data(self._address, register) & 0xFF
+        try:
+            result = self._bus.read_byte_data(self._address, register) & 0xFF
+        except:
+            result = self._bus.read_byte_data(self._address_pre, register) & 0xFF
         return result
 
     def write8(self, register, value):
         value = value & 0xFF
-        self._bus.write_byte_data(self._address, register, value)
+        try:
+            self._bus.write_byte_data(self._address, register, value)
+        except:
+            self._bus.write_byte_data(self._address_pre, register, value)
 
     def readList(self, register, length):
-        results = self._bus.read_i2c_block_data(self._address, register, length)
+        try:
+            results = self._bus.read_i2c_block_data(self._address, register, length)
+        except:
+            results = self._bus.read_i2c_block_data(self._address_pre, register, length)
         return results
 
     def writeList(self, register, data):
-        self._bus.write_i2c_block_data(self._address, register, data)
+        try:
+            self._bus.write_i2c_block_data(self._address, register, data)
 
+        except:
+            self._bus.write_i2c_block_data(self._address_pre, register, data)
+            
 class Bitfield:
     def __init__(self, _structure):
         self._structure = OrderedDict(_structure)
