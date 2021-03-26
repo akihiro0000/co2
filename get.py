@@ -230,7 +230,7 @@ class AirConditionMonitor:
                         co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
                         #tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC()) + '"'
 			co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_address) + '"'
-
+			
                         mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
                         mystr = '{' + ','.join(map(str,mylist))+'}'
                         print(mystr)
