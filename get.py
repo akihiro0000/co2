@@ -87,12 +87,12 @@ def readData():
 	hum = compensate_H(hum_raw)
 	
 	tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
-	co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_device_address) + '"'
+	bme_device = '"' + "bme_device" + '"' + ":" + '"' + str(bme_device_address) + '"'
   	temp = '"' + "temp(degree)" + '"' + ":" + '"' + str(temp) + '"'
 	pre = '"' + "pressure(hPa)" + '"' + ":" + '"' + str(pre) + '"'
 	hum = '"' + "humid(%)" + '"' + ":" + '"' + str(hum) + '"'
     
-	return co2_device,temp,pre,hum
+	return bme_device,temp,pre,hum
 
 def compensate_P(adc_P):
 	global  t_fine
