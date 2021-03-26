@@ -102,10 +102,10 @@ class CCS811:
     def readU8(self, register):
         try:
             result = self._bus.read_byte_data(self._address, register) & 0xFF
-            self._decide_address = self._address
+            self._decide_address = "0xB5"
         except:
             result = self._bus.read_byte_data(self._address_pre, register) & 0xFF
-            self._decide_address = self._address_pre
+            self._decide_address = "0xA5"
         return result
 
     def write8(self, register, value):
