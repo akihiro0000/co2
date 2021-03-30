@@ -206,7 +206,7 @@ class AirConditionMonitor:
     def execute(self):
         while not self._ccs811.available():
             sleep(1)
-	    continue
+            continue
         
         t0 = time.time()
         while True:
