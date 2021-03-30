@@ -205,13 +205,14 @@ class AirConditionMonitor:
 
     def execute(self):
         while not self._ccs811.available():
-            pass
+            sleep(1)
+	    continue
         
         t0 = time.time()
         while True:
             if not self._ccs811.available():
                 sleep(1)
-                continue
+                return
 
             try:
                 if (time.time() - t0)>60 :
@@ -239,8 +240,7 @@ class AirConditionMonitor:
                         if co2_status != self.co2_status:
                             self.co2_status = co2_status
                     else:
-                        while True:
-                            pass
+                        pass
             except:
                 pass
 
@@ -249,6 +249,7 @@ class AirConditionMonitor:
 if __name__ == '__main__':
     mqtt_client = mqtt.Client()
     mqtt_client.connect("fluent-bit",1883, 60)
-    air_condition_monitor = AirConditionMonitor()
-    air_condition_monitor.execute()
+    while True:
+        air_condition_monitor = AirConditionMonitor()
+        air_condition_monitor.execute()
     mqtt_client.disconnect()
