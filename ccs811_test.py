@@ -45,8 +45,8 @@ class CCS811:
         self._TVOC = 0
         self._eCO2 = 0
         #check that the HW id is correct
-        if self.readU8(CCS811_HW_ID) != CCS811_HW_ID_CODE:
-            raise Exception("Device ID returned is not correct! Please check your wiring.")
+        #if self.readU8(CCS811_HW_ID) != CCS811_HW_ID_CODE:
+        #    raise Exception("Device ID returned is not correct! Please check your wiring.")
 
         self.writeList(CCS811_BOOTLOADER_APP_START, [])
         sleep(0.1)
