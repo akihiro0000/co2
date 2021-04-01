@@ -215,45 +215,46 @@ class AirConditionMonitor:
                 return
 
             if (time.time() - t0)>60 :
+		
+		#basic setting
+                tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
+		
+		#bme280
+                bme_device,temp,pre,hum = readData()
+		
+		#co2
+		c=0
                 if not self._ccs811.readData():
                     co2,co2_address = self._ccs811.geteCO2()
                     co2_status = self.status(co2)
                     if co2_status == self.CO2_STATUS_CONDITIONING:
                         sleep(2)
                         continue
+			
+                    co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
+                    co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_address) + '"'
+		    c=1
+		
+		    if co2_status != self.co2_status:
+		    	self.co2_status = co2_status
                     
-		    #basic setting
-                    tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
-                    
-		    #co2
-                    try:
-                        co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
-                        co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_address) + '"'
-                    except:
-                        co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(0) + '"'
-                        co2_device = '"' + "co2_device" + '"' + ":" + '"' + "None" + '"'
-                        
-                    #bme280
-                    bme_device,temp,pre,hum = readData()
+	        if co2 ==0:
+	            co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(0) + '"'
+                    co2_device = '"' + "co2_device" + '"' + ":" + '"' + "None" + '"'
 
-                    mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
-                    mystr = '{' + ','.join(map(str,mylist))+'}'
-                    print(mystr)
+	        #mqtt
+                mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
+                mystr = '{' + ','.join(map(str,mylist))+'}'
+                print(mystr)
+                #mqtt_client.publish("{}/{}".format("/demo",'car_count'), mystr)
+                t0 = time.time()
 
-                    mqtt_client.publish("{}/{}".format("/demo",'car_count'), mystr)
-                    t0 = time.time()
-
-                    if co2_status != self.co2_status:
-                        self.co2_status = co2_status
-                else:
-                    pass
-
-            sleep(2)
+            sleep(1)
 
 if __name__ == '__main__':
-    mqtt_client = mqtt.Client()
-    mqtt_client.connect("fluent-bit",1883, 60)
+    #mqtt_client = mqtt.Client()
+    #mqtt_client.connect("fluent-bit",1883, 60)
     while True:
         air_condition_monitor = AirConditionMonitor()
         air_condition_monitor.execute()
-    mqtt_client.disconnect()
+    #mqtt_client.disconnect()
