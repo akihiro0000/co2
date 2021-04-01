@@ -6,7 +6,7 @@ from time import sleep
 import time
 import paho.mqtt.client as mqtt
 from datetime import datetime
-from ccs811 import CCS811
+from ccs811_test import CCS811
 import pytz
 from smbus2 import SMBus
 
