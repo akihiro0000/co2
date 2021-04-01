@@ -207,13 +207,13 @@ class AirConditionMonitor:
         time = 0
         while True:
             if not self._ccs811.readData():
-		co2,co2_address = self._ccs811.geteCO2()
-		co2_status = self.status(co2)
-		if co2_status != self.co2_status:
-		    self.co2_status = co2_status
-		if time>3:
-		    print(co2)
-		    break
+                co2,co2_address = self._ccs811.geteCO2()
+                co2_status = self.status(co2)
+                if co2_status != self.co2_status:
+                    self.co2_status = co2_status
+                if time>3:
+                    print(co2)
+                    break
 
         sleep(1)
 
