@@ -223,23 +223,19 @@ class AirConditionMonitor:
                 bme_device,temp,pre,hum = readData()
 		
 		#co2
-		c=0
-                if not self._ccs811.readData():
-                    co2,co2_address = self._ccs811.geteCO2()
-                    co2_status = self.status(co2)
-                    if co2_status == self.CO2_STATUS_CONDITIONING:
-                        sleep(2)
-                        continue
-			
-                    co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
-                    co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_address) + '"'
-		    c=1
-		
-		    if co2_status != self.co2_status:
-		    	self.co2_status = co2_status
-                    
-	        if co2 ==0:
-	            co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(0) + '"'
+		try:
+                    if not self._ccs811.readData():
+                        co2,co2_address = self._ccs811.geteCO2()
+                        co2_status = self.status(co2)
+                        if co2_status == self.CO2_STATUS_CONDITIONING:
+                            sleep(2)
+                            continue
+                        co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
+                        co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_address) + '"'
+                        if co2_status != self.co2_status:
+                            self.co2_status = co2_status
+		except:
+                    co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(0) + '"'
                     co2_device = '"' + "co2_device" + '"' + ":" + '"' + "None" + '"'
 
 	        #mqtt
