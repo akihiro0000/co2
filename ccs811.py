@@ -106,9 +106,6 @@ class CCS811:
         except:
             result = self._bus.read_byte_data(self._address_pre, register) & 0xFF
             self._decide_address = "0xA5"
-        except:
-            result = 0
-            self._decide_address = "None"
         return result
 
     def write8(self, register, value):
