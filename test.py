@@ -204,16 +204,9 @@ class AirConditionMonitor:
             return self.CO2_STATUS_TOO_HIGH
 
     def execute(self):
-        while not self._ccs811.available():
-            sleep(1)
-            continue
         
         t0 = time.time()
         while True:
-            if not self._ccs811.available():
-                sleep(1)
-                return
-
             if (time.time() - t0)>60 :
 		
 		#basic setting
@@ -223,20 +216,23 @@ class AirConditionMonitor:
                 bme_device,temp,pre,hum = readData()
 		
 		#co2
+		out=0
                 try:
                     if not self._ccs811.readData():
                         co2,co2_address = self._ccs811.geteCO2()
                         co2_status = self.status(co2)
-                        if co2_status == self.CO2_STATUS_CONDITIONING:
-                            sleep(2)
-                            continue
-                        co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
+			if co2_address=="None":	
+                        	co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(0) + '"'
+				out=1
+			else:
+				co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
                         co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_address) + '"'
                         if co2_status != self.co2_status:
                             self.co2_status = co2_status
                 except:
                     co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(0) + '"'
                     co2_device = '"' + "co2_device" + '"' + ":" + '"' + "None" + '"'
+	            out = 1
 
 	        #mqtt
                 mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
@@ -244,6 +240,8 @@ class AirConditionMonitor:
                 print(mystr)
                 #mqtt_client.publish("{}/{}".format("/demo",'car_count'), mystr)
                 t0 = time.time()
+		if out==1:
+		    break
 
             sleep(1)
 
