@@ -221,9 +221,11 @@ class AirConditionMonitor:
                     if co2_status == self.CO2_STATUS_CONDITIONING:
                         sleep(2)
                         continue
-                        
+                    
+		    #basic setting
                     tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
                     
+		    #co2
                     try:
                         co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
                         co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_address) + '"'
