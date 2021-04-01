@@ -215,6 +215,7 @@ class AirConditionMonitor:
                     print(co2)
                     break
                 time = time + 1
+		sleep(1)
 
         sleep(1)
 
