@@ -215,7 +215,7 @@ class AirConditionMonitor:
                 return
 
             try:
-                if (time.time() - t0)>60 :
+                if (time.time() - t0)>20 :
                     if not self._ccs811.readData():
                         co2,co2_address = self._ccs811.geteCO2()
                         co2_status = self.status(co2)
