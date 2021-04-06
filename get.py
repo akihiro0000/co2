@@ -98,7 +98,6 @@ def readData():
 	temp = compensate_T(temp_raw)
 	pre = compensate_P(pres_raw)
 	hum = compensate_H(hum_raw)+10
-	print(hum)
 	if hum>89:
 		hum = hum -10
 	
