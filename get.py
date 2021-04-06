@@ -97,7 +97,10 @@ def readData():
 	
 	temp = compensate_T(temp_raw)
 	pre = compensate_P(pres_raw)
-	hum = compensate_H(hum_raw)
+	hum = compensate_H(hum_raw)+10
+	
+	if hum>89:
+		hum = hum -10
 	
 	tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
 	bme_device = '"' + "bme_device" + '"' + ":" + '"' + str(bme_device_address) + '"'
