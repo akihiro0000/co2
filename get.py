@@ -95,9 +95,11 @@ def readData():
 	temp_raw = (data[3] << 12) | (data[4] << 4) | (data[5] >> 4)
 	hum_raw  = (data[6] << 8)  |  data[7]
 	
-	temp = compensate_T(temp_raw)
+	temp = round(compensate_T(temp_raw)-1,3)
 	pre = compensate_P(pres_raw)
 	hum = round(compensate_H(hum_raw)+10,3)
+	
+	
 	if hum>89:
 		hum = hum - 10
 		hum = round(hum,3)
