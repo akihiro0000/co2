@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 #coding: utf-8
 import os
@@ -13,6 +12,7 @@ from smbus2 import SMBus
 
 bus_number  = 1
 i2c_address = 0x76
+i2c_address_pre = 0x77
 
 bus = SMBus(bus_number)
 
@@ -24,16 +24,29 @@ t_fine = 0.0
 
 
 def writeReg(reg_address, data):
-	bus.write_byte_data(i2c_address,reg_address,data)
-
+	try:
+		bus.write_byte_data(i2c_address,reg_address,data)
+	except:
+		bus.write_byte_data(i2c_address_pre,reg_address,data)
+		
 def get_calib_param():
-	calib = []
-	
-	for i in range (0x88,0x88+24):
-		calib.append(bus.read_byte_data(i2c_address,i))
-	calib.append(bus.read_byte_data(i2c_address,0xA1))
-	for i in range (0xE1,0xE1+7):
-		calib.append(bus.read_byte_data(i2c_address,i))
+	try:
+		calib = []
+
+		for i in range (0x88,0x88+24):
+			calib.append(bus.read_byte_data(i2c_address,i))
+		calib.append(bus.read_byte_data(i2c_address,0xA1))
+		for i in range (0xE1,0xE1+7):
+			calib.append(bus.read_byte_data(i2c_address,i))
+			
+	except:
+		calib = []
+
+		for i in range (0x88,0x88+24):
+			calib.append(bus.read_byte_data(i2c_address_pre,i))
+		calib.append(bus.read_byte_data(i2c_address_pre,0xA1))
+		for i in range (0xE1,0xE1+7):
+			calib.append(bus.read_byte_data(i2c_address_pre,i))
 
 	digT.append((calib[1] << 8) | calib[0])
 	digT.append((calib[3] << 8) | calib[2])
@@ -67,23 +80,37 @@ def get_calib_param():
 			digH[i] = (-digH[i] ^ 0xFFFF) + 1  
 
 def readData():
-	data = []
-	for i in range (0xF7, 0xF7+8):
-		data.append(bus.read_byte_data(i2c_address,i))
+	try : 
+		data = []
+		for i in range (0xF7, 0xF7+8):
+			data.append(bus.read_byte_data(i2c_address,i))
+			bme_device_address = "0x76"
+	except:
+		data = []
+		for i in range (0xF7, 0xF7+8):
+			data.append(bus.read_byte_data(i2c_address_pre,i))
+			bme_device_address = "0x77"
+      
 	pres_raw = (data[0] << 12) | (data[1] << 4) | (data[2] >> 4)
 	temp_raw = (data[3] << 12) | (data[4] << 4) | (data[5] >> 4)
 	hum_raw  = (data[6] << 8)  |  data[7]
 	
-	temp = compensate_T(temp_raw)
+	temp = round(compensate_T(temp_raw)-1,3)
 	pre = compensate_P(pres_raw)
-	hum = compensate_H(hum_raw)
+	hum = round(compensate_H(hum_raw)+10,3)
+	
+	
+	if hum>89:
+		hum = hum - 10
+		hum = round(hum,3)
 	
 	tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
+	bme_device = '"' + "bme_device" + '"' + ":" + '"' + str(bme_device_address) + '"'
 	temp = '"' + "temp(degree)" + '"' + ":" + '"' + str(temp) + '"'
 	pre = '"' + "pressure(hPa)" + '"' + ":" + '"' + str(pre) + '"'
 	hum = '"' + "humid(%)" + '"' + ":" + '"' + str(hum) + '"'
     
-	return temp,pre,hum
+	return bme_device,temp,pre,hum
 
 def compensate_P(adc_P):
 	global  t_fine
@@ -183,18 +210,19 @@ class AirConditionMonitor:
 
     def execute(self):
         while not self._ccs811.available():
-            pass
+            sleep(1)
+            continue
         
         t0 = time.time()
         while True:
             if not self._ccs811.available():
                 sleep(1)
-                continue
+                return
 
             try:
-                if (time.time() - t0)>60 :
+                if (time.time() - t0)>20 :
                     if not self._ccs811.readData():
-                        co2 = self._ccs811.geteCO2()
+                        co2,co2_address = self._ccs811.geteCO2()
                         co2_status = self.status(co2)
                         if co2_status == self.CO2_STATUS_CONDITIONING:
                             print("Under Conditioning...")
@@ -202,13 +230,12 @@ class AirConditionMonitor:
                             continue
                         
                         #bme280
-                        temp,pre,hum = readData()
+                        bme_device,temp,pre,hum = readData()
                             
                         tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
                         co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
-                        #tvoc = '"' + "TVOC" + '"' + ":" + '"' + str(self._ccs811.getTVOC()) + '"'
-
-                        mylist = [tim,co2,temp,pre,hum]
+                        co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_address) + '"'
+                        mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
                         mystr = '{' + ','.join(map(str,mylist))+'}'
                         print(mystr)
 
@@ -218,8 +245,7 @@ class AirConditionMonitor:
                         if co2_status != self.co2_status:
                             self.co2_status = co2_status
                     else:
-                        while True:
-                            pass
+                        pass
             except:
                 pass
 
@@ -228,6 +254,7 @@ class AirConditionMonitor:
 if __name__ == '__main__':
     mqtt_client = mqtt.Client()
     mqtt_client.connect("fluent-bit",1883, 60)
-    air_condition_monitor = AirConditionMonitor()
-    air_condition_monitor.execute()
+    while True:
+        air_condition_monitor = AirConditionMonitor()
+        air_condition_monitor.execute()
     mqtt_client.disconnect()
