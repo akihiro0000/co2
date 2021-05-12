@@ -234,14 +234,10 @@ class AirConditionMonitor:
                         co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_address) + '"'
 			
 			return tim,co2,co2_device
-			
-                        t0 = time.time()
-
-                        if co2_status != self.co2_status:
-                            self.co2_status = co2_status
                     else:
                         pass
             except:
+		t0 = time.time()
                 pass
 
             sleep(2)
