@@ -256,5 +256,6 @@ if __name__ == '__main__':
         bme_device,temp,pre,hum = readData()
         mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
         mystr = '{' + ','.join(map(str,mylist))+'}'
+        print(mystr)
         mqtt_client.publish("{}/{}".format("/demo",'car_count'), mystr)
     mqtt_client.disconnect()
