@@ -254,7 +254,12 @@ class AirConditionMonitor:
 if __name__ == '__main__':
     mqtt_client = mqtt.Client()
     mqtt_client.connect("fluent-bit",1883, 60)
+    t0 = time.time()
     while True:
-        air_condition_monitor = AirConditionMonitor()
-        air_condition_monitor.execute()
+	if (time.time() - t0)>20 :
+		tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
+		air_condition_monitor = AirConditionMonitor()
+        	air_condition_monitor.execute()
+		t0 = time.time()
     mqtt_client.disconnect()
+		
