@@ -228,18 +228,13 @@ class AirConditionMonitor:
                             print("Under Conditioning...")
                             sleep(2)
                             continue
-                        
-                        #bme280
-                        bme_device,temp,pre,hum = readData()
                             
                         tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
                         co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
                         co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_address) + '"'
-                        mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
-                        mystr = '{' + ','.join(map(str,mylist))+'}'
-                        print(mystr)
-
-                        mqtt_client.publish("{}/{}".format("/demo",'car_count'), mystr)
+			
+			return tim,co2,co2_device
+			
                         t0 = time.time()
 
                         if co2_status != self.co2_status:
@@ -254,12 +249,19 @@ class AirConditionMonitor:
 if __name__ == '__main__':
     mqtt_client = mqtt.Client()
     mqtt_client.connect("fluent-bit",1883, 60)
-    t0 = time.time()
     while True:
-	if (time.time() - t0)>20 :
-		tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
+	try:
 		air_condition_monitor = AirConditionMonitor()
-        	air_condition_monitor.execute()
-		t0 = time.time()
+        	tim,co2,co2_device = air_condition_monitor.execute()
+	except KeyboardInterrupt:
+		break
+	except:
+		tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
+		co2 = "0"
+		co2_device = "ERROR"
+	bme_device,temp,pre,hum = readData()
+	mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
+        mystr = '{' + ','.join(map(str,mylist))+'}'
+	mqtt_client.publish("{}/{}".format("/demo",'car_count'), mystr)
     mqtt_client.disconnect()
 		
