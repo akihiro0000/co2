@@ -228,11 +228,9 @@ class AirConditionMonitor:
                             print("Under Conditioning...")
                             sleep(2)
                             continue
-                            
                         tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
                         co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(co2) + '"'
                         co2_device = '"' + "co2_device" + '"' + ":" + '"' + str(co2_address) + '"'
-			
 			return tim,co2,co2_device
                     else:
                         pass
