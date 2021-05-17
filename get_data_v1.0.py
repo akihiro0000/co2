@@ -241,8 +241,8 @@ class AirConditionMonitor:
             sleep(2)
 
 if __name__ == '__main__':
-    mqtt_client = mqtt.Client()
-    mqtt_client.connect("fluent-bit",1883, 60)
+    #mqtt_client = mqtt.Client()
+    #mqtt_client.connect("fluent-bit",1883, 60)
     while True:
         try:
             air_condition_monitor = AirConditionMonitor()
@@ -257,5 +257,5 @@ if __name__ == '__main__':
         mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
         mystr = '{' + ','.join(map(str,mylist))+'}'
         print(mystr)
-        mqtt_client.publish("{}/{}".format("/demo",'car_count'), mystr)
-    mqtt_client.disconnect()
+        #mqtt_client.publish("{}/{}".format("/demo",'car_count'), mystr)
+    #mqtt_client.disconnect()
