@@ -244,16 +244,17 @@ if __name__ == '__main__':
     mqtt_client = mqtt.Client()
     mqtt_client.connect("fluent-bit",1883, 60)
     while True:
+	sign = 0
         try:
             air_condition_monitor = AirConditionMonitor()
             tim,co2,co2_device = air_condition_monitor.execute()
-            sign = True
+            sign = 1
         except KeyboardInterrupt:
             break
         except:
             pass
 
-        if not sign:
+        if sign==0:
             tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
             co2 = "0"
             co2_device = "ERROR"
