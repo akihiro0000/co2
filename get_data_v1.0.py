@@ -254,9 +254,8 @@ if __name__ == '__main__':
             mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
             mystr = '{' + ','.join(map(str,mylist))+'}'
             print(mystr)
+            t0 = time.time()
             mqtt_client.publish("{}/{}".format("/demo",'car_count'), mystr)
-        except KeyboardInterrupt:
-            break
         except Exception as e:
             if (time.time() - t0)>20 :
                 tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
