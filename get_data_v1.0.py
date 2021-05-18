@@ -241,10 +241,10 @@ class AirConditionMonitor:
             sleep(2)
 
 if __name__ == '__main__':
-    mqtt_client = mqtt.Client()
-    mqtt_client.connect("fluent-bit",1883, 60)
     t0 = time.time()
     while True:
+        mqtt_client = mqtt.Client()
+        mqtt_client.connect("fluent-bit",1883, 60)
         sign = 0
         try:
             air_condition_monitor = AirConditionMonitor()
@@ -270,4 +270,4 @@ if __name__ == '__main__':
                 print(e)
                 t0 = time.time()
                 pass
-    mqtt_client.disconnect()
+        mqtt_client.disconnect()
