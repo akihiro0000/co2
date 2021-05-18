@@ -252,13 +252,9 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             break
         except:
-            pass
-
-        if sign==0:
             tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
-            co2 = "0"
-            co2_device = "ERROR"
-	
+            co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(0) + '"'
+            co2_device = '"' + "co2_device" + '"' + ":" + '"' + "ERROR" + '"'
         bme_device,temp,pre,hum = readData()
         mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
         mystr = '{' + ','.join(map(str,mylist))+'}'
