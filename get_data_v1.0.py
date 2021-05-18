@@ -251,7 +251,7 @@ if __name__ == '__main__':
             sign = 1
         except KeyboardInterrupt:
             break
-	except Exception as e:
+        except Exception as e:
             print(e)
             pass
         if sign==0:
@@ -260,7 +260,7 @@ if __name__ == '__main__':
                 tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
                 co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(0) + '"'
                 co2_device = '"' + "co2_device" + '"' + ":" + '"' + "ERROR" + '"'
-		t0 = time.time()
+                t0 = time.time()
         bme_device,temp,pre,hum = readData()
         mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
         mystr = '{' + ','.join(map(str,mylist))+'}'
