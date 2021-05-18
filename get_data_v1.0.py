@@ -243,9 +243,9 @@ class AirConditionMonitor:
 if __name__ == '__main__':
     mqtt_client = mqtt.Client()
     mqtt_client.connect("fluent-bit",1883, 60)
+    t0 = time.time()
     while True:
         sign = 0
-        t0 = time.time()
         try:
             air_condition_monitor = AirConditionMonitor()
             tim,co2,co2_device = air_condition_monitor.execute()
