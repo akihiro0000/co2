@@ -220,7 +220,7 @@ class AirConditionMonitor:
                 return
 
             try:
-                if (time.time() - t0)>20 :
+                if (time.time() - t0)>10 :
                     if not self._ccs811.readData():
                         co2,co2_address = self._ccs811.geteCO2()
                         co2_status = self.status(co2)
@@ -245,6 +245,7 @@ if __name__ == '__main__':
     mqtt_client.connect("fluent-bit",1883, 60)
     while True:
         sign = 0
+        t0 = time.time()
         try:
             air_condition_monitor = AirConditionMonitor()
             tim,co2,co2_device = air_condition_monitor.execute()
@@ -257,14 +258,16 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             break
         except Exception as e:
-            tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
-            co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(0) + '"'
-            co2_device = '"' + "co2_device" + '"' + ":" + '"' + "ERROR" + '"'
-            bme_device,temp,pre,hum = readData()
-            mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
-            mystr = '{' + ','.join(map(str,mylist))+'}'
-            print(mystr)
-            mqtt_client.publish("{}/{}".format("/demo",'car_count'), mystr)
-            print(e)
-            pass
+            if (time.time() - t0)>20 :
+                tim = '"timestamp":"'+datetime.now(pytz.timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S.%f')+'"'
+                co2 = '"' + "CO2[ppm]" + '"' + ":" + '"' + str(0) + '"'
+                co2_device = '"' + "co2_device" + '"' + ":" + '"' + "ERROR" + '"'
+                bme_device,temp,pre,hum = readData()
+                mylist = [tim,bme_device,temp,pre,hum,co2_device,co2]
+                mystr = '{' + ','.join(map(str,mylist))+'}'
+                print(mystr)
+                mqtt_client.publish("{}/{}".format("/demo",'car_count'), mystr)
+                print(e)
+                t0 = time.time()
+                pass
     mqtt_client.disconnect()
